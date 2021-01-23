@@ -62,4 +62,44 @@ class Board {
         }
         return false
     }
+
+    var computersMove: Cell? = null
+    fun miniMax(depth: Int, player: String): Int {
+        if (hasComputerWon()) return +1
+        if (hasPlayerWon()) return -1
+        if (availableCells.isEmpty()) return 0
+
+        var min = Integer.MAX_VALUE
+        var max = Integer.MIN_VALUE
+        for (i in availableCells.indices) {
+            val cell = availableCells[i]
+            if (player == COMPUTER) {
+                placeMove(cell, COMPUTER)
+                val currentScore = miniMax(depth + 1, PLAYER)
+                max = currentScore.coerceAtLeast(max)
+
+                if (currentScore >= 0) {
+                    if (depth == 0) computersMove = cell
+                }
+                if (currentScore == 1) {
+                    board[cell.i][cell.j] = ""
+                    break
+                }
+                if (i == availableCells.size - 1 && max < 0) {
+                    if (depth == 0) computersMove = cell
+                }
+            } else if (player == PLAYER) {
+                placeMove(cell, PLAYER)
+                val currentScore = miniMax(depth + 1, COMPUTER)
+                min = currentScore.coerceAtMost(min)
+
+                if (min == -1) {
+                    board[cell.i][cell.j] = ""
+                    break
+                }
+            }
+            board[cell.i][cell.j] = ""
+        }
+        return if (player == COMPUTER) max else min
+    }
 }

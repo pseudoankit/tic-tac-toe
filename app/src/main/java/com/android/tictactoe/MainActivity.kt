@@ -89,19 +89,20 @@ class MainActivity : AppCompatActivity() {
     //click listener when user clicks specific cell to make move
     inner class CellClickListener(private val i: Int, private val j: Int) : View.OnClickListener {
         override fun onClick(v: View?) {
+
+            //click allowed only when game not over
             if (!board.isGameOver) {
                 //creating a new cell with the clicked index
                 val cell = Cell(i, j)
                 board.placeMove(cell, Board.PLAYER)
 
-                if (board.availableCells.isNotEmpty()) {
-                    val compCell =
-                        board.availableCells[Random.nextInt(0, board.availableCells.size)]
-                    board.placeMove(compCell, Board.COMPUTER)
+                board.miniMax(0, Board.COMPUTER)
+                board.computersMove?.let {
+                    board.placeMove(it, Board.COMPUTER)
                 }
                 mapBoardToUI()
             }
-            when{
+            when {
                 board.hasPlayerWon() -> binding.tvResult.text = "Player Won"
                 board.hasComputerWon() -> binding.tvResult.text = "Computer Won"
                 board.isGameOver -> binding.tvResult.text = "Game Tied"
