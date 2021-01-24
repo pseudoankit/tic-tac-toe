@@ -2,12 +2,10 @@ package com.android.tictactoe
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.Layout
 import android.view.View
 import android.widget.GridLayout
 import android.widget.ImageView
 import android.widget.PopupMenu
-import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import com.android.tictactoe.databinding.ActivityMainBinding
@@ -36,11 +34,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun buttonSMPlayer() {
-        val popupMenu = PopupMenu(this, binding.buttonSMPlayer)
-        val menu = popupMenu.menu
-        popupMenu.menuInflater.inflate(R.menu.level_s_m_player, menu)
-
-        popupMenu.setOnMenuItemClickListener {
+        popup(binding.buttonSMPlayer, R.menu.menul_s_m_player).setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.single_player -> {
                     binding.buttonLevel.visibility = View.VISIBLE
@@ -57,15 +51,10 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
-        popupMenu.show()
     }
 
     private fun buttonLevel() {
-        val popupMenu = PopupMenu(this, binding.buttonLevel)
-        val menu = popupMenu.menu
-        popupMenu.menuInflater.inflate(R.menu.level_menu, menu)
-
-        popupMenu.setOnMenuItemClickListener {
+        popup(binding.buttonLevel, R.menu.menu_level).setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.level_easy -> {
                     binding.buttonLevel.text = resources.getString(R.string.text_easy)
@@ -80,7 +69,6 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
-        popupMenu.show()
     }
 
     private fun buttonRestart() {
@@ -149,14 +137,14 @@ class MainActivity : AppCompatActivity() {
             //click allowed only when game not over
             if (!board.isGameOver) {
                 //creating a new cell with the clicked index
-                if(player == null) player = Board.PLAYER
+                if (player == null) player = Board.PLAYER
                 val cell = Cell(i, j)
                 board.placeMove(cell, player!!)
 
                 if (player == Board.PLAYER) player = Board.COMPUTER
                 else if (player == Board.COMPUTER) player = Board.PLAYER
 
-                if(isSinglePlayer){
+                if (isSinglePlayer) {
                     if (isEasy) {
                         if (board.availableCells.isNotEmpty()) {
                             val compCell =
@@ -181,5 +169,13 @@ class MainActivity : AppCompatActivity() {
                 board.isGameOver -> binding.tvResult.text = "Game Tied"
             }
         }
+    }
+
+    private fun popup(view: View, layout: Int): PopupMenu {
+        val popupMenu = PopupMenu(this, view)
+        val menu = popupMenu.menu
+        popupMenu.menuInflater.inflate(layout, menu)
+        popupMenu.show()
+        return popupMenu
     }
 }
