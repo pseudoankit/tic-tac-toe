@@ -6,6 +6,7 @@ import android.text.Layout
 import android.view.View
 import android.widget.GridLayout
 import android.widget.ImageView
+import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -16,6 +17,9 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private val boardCells = Array(3) { arrayOfNulls<ImageView>(3) }
+    private var isEasy = true
+    private var isSinglePlayer = true
+    private var player: String? = null
 
     //creating the board instance
     var board = Board()
@@ -25,19 +29,71 @@ class MainActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
         loadBoard()
-        binding.buttonRestart.setOnClickListener {
-            //creating a new board instance it will empty every cell
-            board = Board()
-
-            //setting the result to empty
-            binding.tvResult.text = ""
-
-            //this function will map the internal board to the visual board
-            mapBoardToUI()
-        }
+        binding.buttonRestart.setOnClickListener { buttonRestart() }
+        binding.buttonLevel.setOnClickListener { buttonLevel() }
+        binding.buttonSMPlayer.setOnClickListener { buttonSMPlayer() }
 
     }
 
+    private fun buttonSMPlayer() {
+        val popupMenu = PopupMenu(this, binding.buttonSMPlayer)
+        val menu = popupMenu.menu
+        popupMenu.menuInflater.inflate(R.menu.level_s_m_player, menu)
+
+        popupMenu.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.single_player -> {
+                    binding.buttonLevel.visibility = View.VISIBLE
+                    binding.buttonSMPlayer.text = resources.getString(R.string.text_single_player)
+                    isSinglePlayer = true
+                    buttonRestart()
+                }
+                R.id.multi_player -> {
+                    binding.buttonLevel.visibility = View.GONE
+                    binding.buttonSMPlayer.text = resources.getString(R.string.text_multi_player)
+                    isSinglePlayer = false
+                    buttonRestart()
+                }
+            }
+            true
+        }
+        popupMenu.show()
+    }
+
+    private fun buttonLevel() {
+        val popupMenu = PopupMenu(this, binding.buttonLevel)
+        val menu = popupMenu.menu
+        popupMenu.menuInflater.inflate(R.menu.level_menu, menu)
+
+        popupMenu.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.level_easy -> {
+                    binding.buttonLevel.text = resources.getString(R.string.text_easy)
+                    isEasy = true
+                    buttonRestart()
+                }
+                R.id.level_hard -> {
+                    binding.buttonLevel.text = resources.getString(R.string.text_hard)
+                    isEasy = false
+                    buttonRestart()
+                }
+            }
+            true
+        }
+        popupMenu.show()
+    }
+
+    private fun buttonRestart() {
+        player = null
+        //creating a new board instance it will empty every cell
+        board = Board()
+
+        //setting the result to empty
+        binding.tvResult.text = ""
+
+        //this function will map the internal board to the visual board
+        mapBoardToUI()
+    }
 
     private fun mapBoardToUI() {
         //function is mapping the internal board to the ImageView array board
@@ -93,18 +149,35 @@ class MainActivity : AppCompatActivity() {
             //click allowed only when game not over
             if (!board.isGameOver) {
                 //creating a new cell with the clicked index
+                if(player == null) player = Board.PLAYER
                 val cell = Cell(i, j)
-                board.placeMove(cell, Board.PLAYER)
+                board.placeMove(cell, player!!)
 
-                board.miniMax(0, Board.COMPUTER)
-                board.computersMove?.let {
-                    board.placeMove(it, Board.COMPUTER)
+                if (player == Board.PLAYER) player = Board.COMPUTER
+                else if (player == Board.COMPUTER) player = Board.PLAYER
+
+                if(isSinglePlayer){
+                    if (isEasy) {
+                        if (board.availableCells.isNotEmpty()) {
+                            val compCell =
+                                board.availableCells[Random.nextInt(0, board.availableCells.size)]
+                            board.placeMove(compCell, player!!)
+                        }
+                    } else {
+                        board.miniMax(0, player!!)
+                        board.computersMove?.let {
+                            board.placeMove(it, player!!)
+                        }
+                    }
+                    if (player == Board.PLAYER) player = Board.COMPUTER
+                    else if (player == Board.COMPUTER) player = Board.PLAYER
                 }
                 mapBoardToUI()
             }
             when {
                 board.hasPlayerWon() -> binding.tvResult.text = "Player Won"
-                board.hasComputerWon() -> binding.tvResult.text = "Computer Won"
+                board.hasComputerWon() && isSinglePlayer -> binding.tvResult.text = "Computer Won"
+                board.hasComputerWon() && !isSinglePlayer -> binding.tvResult.text = "Player2 Won"
                 board.isGameOver -> binding.tvResult.text = "Game Tied"
             }
         }

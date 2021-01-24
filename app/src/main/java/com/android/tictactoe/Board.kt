@@ -4,6 +4,7 @@ class Board {
     companion object {
         const val PLAYER = "O"
         const val COMPUTER = "X"
+        const val PLAYER2 = "X"
     }
 
     val board = Array(3) { arrayOfNulls<String>(3) }

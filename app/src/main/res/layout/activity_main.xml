@@ -9,6 +9,7 @@
         android:layout_height="match_parent"
         android:background="@color/colorBackground"
         tools:context=".MainActivity">
+
         <ImageView
             android:id="@+id/iv_name"
             android:layout_width="280dp"
@@ -44,15 +45,44 @@
             android:rowCount="3"
             android:useDefaultMargins="true" />
 
-        <Button
-            android:id="@+id/button_restart"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="15dp"
-            android:text="Restart"
-            android:textAllCaps="false" />
+            android:orientation="horizontal">
 
+            <Button
+                android:id="@+id/button_s_m_player"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableRight="@drawable/ic_baseline_arrow_drop_down_24"
+                android:padding="3dp"
+                android:text="@string/text_single_player"
+                android:textAllCaps="false"
+                android:textStyle="italic" />
+
+            <Button
+                android:id="@+id/button_restart"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:padding="3dp"
+                android:text="Restart"
+                android:textAllCaps="false"
+                android:textStyle="italic" />
+
+            <Button
+                android:id="@+id/button_level"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:drawableRight="@drawable/ic_baseline_arrow_drop_down_24"
+                android:padding="3dp"
+                android:text="@string/text_easy"
+                android:textAllCaps="false"
+                android:textStyle="italic" />
+        </LinearLayout>
     </RelativeLayout>
 </layout>

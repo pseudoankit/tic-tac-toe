@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Tic Tac Toe</string>
+    <string name="text_easy">Easy</string>
+    <string name="text_hard">Hard</string>
+    <string name="text_single_player">Single Player</string>
+    <string name="text_multi_player">Multi Player</string>
 </resources>
